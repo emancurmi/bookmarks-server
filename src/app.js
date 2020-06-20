@@ -4,10 +4,10 @@ const morgan = require('morgan')
 const cors = require('cors')
 const helmet = require('helmet')
 const { NODE_ENV } = require('./config')
-
 const app = express()
 
 const bookmarkRouter = require('./bookmark/bookmark-router');
+
 
 const morganOption = (NODE_ENV === 'production')
   ? 'tiny'
@@ -28,10 +28,6 @@ app.use(function validateBearerToken(req, res, next) {
     next()
 })
 
-app.get('/', (req, res) => {
-    res.send('Hello, world!')
-})
-
 app.use(bookmarkRouter);
 
 app.use(function errorHandler(error, req, res, next) {
@@ -43,6 +39,12 @@ app.use(function errorHandler(error, req, res, next) {
         response = { message: error.message, error }
     }
     res.status(500).json(response)
+})
+
+
+
+app.get('/', (req, res) => {
+    res.send('Hello, world!')
 })
 
 module.exports = app
