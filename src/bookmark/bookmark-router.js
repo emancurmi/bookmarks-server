@@ -1,9 +1,9 @@
 const express = require('express')
+const xss = require('xss')
 const { v4: uuid } = require('uuid')
 const logger = require('../logger')
-const { bookmarks } = require('../store')
+//const { bookmarks } = require('../store')
 const BookmarkService = require('./bookmark-service')
-
 
 const bookmarkRouter = express.Router()
 const bodyParser = express.json()
@@ -22,6 +22,7 @@ bookmarkRouter
     .post(bodyParser, (req, res) => {
         console.log(req.body);
         const { title, url, desc, rating } = req.body
+        const newBookmark = { title, url, desc, rating }
 
         for (const field of ['title', 'url', 'rating']) {
             if (!req.body[field]) {
@@ -60,31 +61,53 @@ bookmarkRouter
             desc
         };
 
-        bookmarks.push(bookmark);
+        BookmarkService.insertBookmark(
+            req.app.get('db'),
+            newBookmark
+        )
+            .then(bookmark => {
 
-        logger.info(`bookmark with id ${id} created`);
+                logger.info(`bookmark with id ${id} created`);
 
-        res
-            .status(201)
-            .location(`http://localhost:8000/bookmark/${id}`)
-            .json(bookmark);
+                res
+                    .status(201)
+                    .location(`/bookmarks/${bookmark.id}`)
+                    .json(article)
+            })
+            .catch(next)
+
     })
 
 bookmarkRouter
     .route('/bookmark/:id')
-    .get((req, res, next) => {
-        const knexInstance = req.app.get('db')
-        BookmarkService.getById(knexInstance, req.params.bookmark_id)
+
+    .all((req, res, next) => {
+        BookmarkService.getById(
+            req.app.get('db'),
+            req.params.article_id
+        )
             .then(bookmark => {
                 if (!bookmark) {
-                    return res.stats(404).json({
-                        error: { message: 'Bookmark not found' }
+                    return res.status(404).json({
+                        error: { message: `Bookmark doesn't exist` }
                     })
                 }
-                res.json(bookmark)
+                res.bookmark = bookmark 
+                next() 
             })
             .catch(next)
     })
+
+    .get((req, res, next) => {
+        res.json({
+            id: res.bookmark.id,
+            title: xss(res.bookmark.title),
+            url: res.bookmark.url, 
+            rating: res.bookmark.rating,
+            desc: xss(res.bookmark.desc),
+        })
+    })
+
     .delete((req, res) => {
         const { id } = req.params;
 
