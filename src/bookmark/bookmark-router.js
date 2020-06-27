@@ -9,7 +9,7 @@ const bookmarkRouter = express.Router()
 const bodyParser = express.json()
 
 bookmarkRouter
-    .route('/bookmark')
+    .route('/')
     .get((req, res, next) => {
         const knexInstance = req.app.get('db')
         BookmarkService.getAllBookmarks(knexInstance)
