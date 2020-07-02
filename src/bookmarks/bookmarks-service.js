@@ -1,34 +1,29 @@
-const BookmarkService = {
-
+const BookmarksService = {
     getAllBookmarks(knex) {
-        return knex.select('*').from('tbl_bookmarks')
+        return knex.select('*').from('bookmarks')
     },
-
+    getById(knex, id) {
+        return knex.from('bookmarks').select('*').where('id', id).first()
+    },
     insertBookmark(knex, newBookmark) {
         return knex
             .insert(newBookmark)
-            .into('tbl_bookmarks')
+            .into('bookmarks')
             .returning('*')
             .then(rows => {
                 return rows[0]
             })
     },
-
-    getById(knex, id) {
-        return knex.from('tbl_bookmarks').select('*').where('id', id).first()
-    },
-
     deleteBookmark(knex, id) {
-        return knex('tbl_bookmarks')
+        return knex('bookmarks')
             .where({ id })
             .delete()
     },
-
     updateBookmark(knex, id, newBookmarkFields) {
-        return knex('tbl_bookmarks')
+        return knex('bookmarks')
             .where({ id })
-            .update(newArticleFields)
+            .update(newBookmarkFields)
     },
 }
 
-module.exports = BookmarkService
+module.exports = BookmarksService

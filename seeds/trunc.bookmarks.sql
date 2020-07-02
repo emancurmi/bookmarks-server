@@ -1,1 +1,1 @@
-TRUNCATE tbl_bookmarks;
+TRUNCATE bookmarks;
