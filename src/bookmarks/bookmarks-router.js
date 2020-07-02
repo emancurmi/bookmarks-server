@@ -1,5 +1,5 @@
 const express = require('express')
-//const { isWebUri } = require('valid-url')
+const { isWebUri } = require('valid-url')
 const xss = require('xss')
 const logger = require('../logger')
 const BookmarksService = require('./bookmarks-service')
@@ -45,12 +45,12 @@ bookmarksRouter
             })
         }
 
-        //if (!isWebUri(url)) {
-        //    logger.error(`Invalid url '${url}' supplied`)
-        //    return res.status(400).send({
-        //        error: { message: `'url' must be a valid URL` }
-        //    })
-        //}
+        if (!isWebUri(url)) {
+            logger.error(`Invalid url '${url}' supplied`)
+            return res.status(400).send({
+                error: { message: `'url' must be a valid URL` }
+            })
+        }
 
         const newBookmark = { title, url, description, rating }
 
