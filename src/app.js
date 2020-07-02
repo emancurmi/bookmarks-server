@@ -20,7 +20,7 @@ app.use(validateBearerToken)
 app.use('/api/bookmarks/', bookmarksRouter)
 
 app.get('/', (req, res) => {
-    res.send('Hello, world!')
+    res.send('Bookmarks server!')
 })
 
 app.use(errorHandler)
