@@ -86,9 +86,11 @@ bookmarksRouter
             })
             .catch(next)
     })
+
     .get((req, res) => {
         res.json(serializeBookmark(res.bookmark))
     })
+
     .delete((req, res, next) => {
         const { bookmark_id } = req.params
         BookmarksService.deleteBookmark(
@@ -101,7 +103,9 @@ bookmarksRouter
             })
             .catch(next)
     })
+
     .patch(bodyParser, (req, res, next) => {
+
         const { title, url, description, rating } = req.body
         const bookmarkToUpdate = { title, url, description, rating }
 
@@ -116,7 +120,7 @@ bookmarksRouter
 
         BookmarksService.updateBookmark(
             req.app.get('db'),
-            req.params.article_id,
+            req.params.bookmark_id,
             bookmarkToUpdate
         )
             .then(numRowsAffected => {
